@@ -1,0 +1,57 @@
+---
+interface Props {
+  totalPages: number;
+}
+
+const { totalPages } = Astro.props;
+const url = Astro.url;
+const pageParam = Number(url.searchParams.get("page") ?? 1);
+
+const currentPage = Math.max(
+  pageParam > totalPages ? totalPages : pageParam,
+  1
+);
+
+const currentPath = url.pathname;
+---
+
+<div class="join fixed bottom-0 mb-8">
+  <a
+    id="btn-prev"
+    href={`${currentPath}?page=${Math.max(currentPage - 1, 1)}`}
+    class="join-item btn disabled:bg-red-500">«</a
+  >
+  <button class="join-item btn w-[200px]"
+    >Page {currentPage} de {totalPages}</button
+  >
+  <a
+    id="btn-next"
+    href={`${currentPath}?page=${Math.min(currentPage + 1, totalPages)}`}
+    class="join-item btn">»</a
+  >
+</div>
+
+<script>
+
+  
+    document.addEventListener("DOMContentLoaded", () => {
+    const btnPrev = document.querySelector("#btn-prev") as HTMLButtonElement;
+    const btnNext = document.querySelector("#btn-next") as HTMLButtonElement;
+
+
+    let params = new URLSearchParams(document.location.search);
+    let page = Number(params.get("page")); // is the currentpage
+    
+
+    if(page === 1) {
+        btnPrev.setAttribute('disabled', 'disabled')
+    }
+
+    if(page === 5) {
+        btnNext.setAttribute('disabled', 'disabled')
+    }
+
+
+    //console.log(btnNext, btnPrev)
+  });
+</script>

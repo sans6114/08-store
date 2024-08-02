@@ -1,8 +1,17 @@
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
+import netlify from "@astrojs/netlify";
+import db from "@astrojs/db";
+import auth from "auth-astro";
 
-import tailwind from "@astrojs/tailwind";
+import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind()]
+  integrations: [tailwind(), db(), auth(), react()],
+  output: "server",
+  experimental: {
+    actions: true
+  },
+  adapter: netlify()
 });
