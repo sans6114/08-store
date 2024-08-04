@@ -1,8 +1,9 @@
 ---
 import MainLayout from "@/layouts/MainLayout.astro"
+import { actions } from "astro:actions"
 
 
-const cart = Astro.cookies.get('cart')
+const {data:cart,error} = await actions.getCart.safe()
 console.log(cart)
 ---
 
