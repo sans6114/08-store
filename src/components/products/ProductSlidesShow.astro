@@ -1,14 +1,65 @@
 ---
+import "swiper/css";
+import "swiper/css/pagination";
+
 interface Props {
-    images: string[]
+  images: string[];
 }
 
+const { images } = Astro.props;
 
-const {images} = Astro.props
+const imagesForSlide = images.map((image) => {
+  return image.startsWith("http")
+    ? image
+    : `${import.meta.env.PUBLIC_URL}/images/products/${image}`;
+});
 ---
 
-<h1>Product slides</h1>
+<!-- Slider main container -->
+<div class="swiper mt-10 col-span-1 sm:col-span-2">
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    {
+      imagesForSlide.map((img) => (
+        <div class="swiper-slide">
+          <img
+            src={img}
+            alt="Product Image"
+            class="w-full h-full object-cover px-10 rounded-3xl"
+          />
+        </div>
+      ))
+    }
+  </div>
+  <!-- If we need pagination -->
+  <div class="swiper-pagination"></div>
+</div>
 
-<p>
-    {JSON.stringify(images)}
-</p>
+<style>
+  .swiper {
+    border-radius: 20px;
+    width: 75%;
+    height: auto;
+  }
+  @media (max-width: 600px) {
+  .swiper {
+    width: 100%;
+  }
+
+}
+</style>
+
+<script>
+  import Swiper from "swiper";
+  import { Pagination } from "swiper/modules";
+
+  const swiper = new Swiper(".swiper", {
+    // If we need pagination
+    pagination: {
+      el: ".swiper-pagination",
+    },
+
+    modules: [Pagination],
+  });
+</script>

@@ -5,6 +5,7 @@ import MainLayout from "@/layouts/MainLayout.astro";
 import { actions } from "astro:actions";
 
 const params = Astro.url.searchParams
+
 const currentPage = Number(params.get('page') ?? 1)
 console.log(currentPage)
 const { data, error } = await actions.getProductsByPage.safe({
@@ -15,11 +16,12 @@ if (error) {
   console.log(error);
   return Astro.redirect("/");
 }
-
-
-
-
 const { products, totalPages } = data;
+if(data.products.length === 0) {
+  return Astro.redirect(`/?page=${totalPages}`)
+}
+
+
 ---
 
 <MainLayout>

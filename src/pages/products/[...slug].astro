@@ -3,26 +3,26 @@ import MainLayout from "@/layouts/MainLayout.astro";
 import { actions } from "astro:actions";
 import ProductSlidesShow from "@/components/products/ProductSlidesShow.astro";
 
-
 const { slug } = Astro.params;
 
 const { data, error } = await actions.getProductBySlug.safe(slug ?? "");
 if (error) {
   Astro.redirect("/404");
 }
-if(!data) return
+if (!data) return;
 
-const {images, product} = data
+const { images, product } = data;
+console.log(images);
 ---
 
-<MainLayout
-  title={product.title}
-  description={product.description}
+<MainLayout title={product.title} description={product.description}>
+  <h1
+  class="mb-10 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center"
+  >
+  {product.title}
+  </h1>
 
->
-  <h1>{product.title}</h1>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 w-full">
+  <div class="grid grid-cols-1 md:grid-cols-3 w-full gap-4">
     <ProductSlidesShow images={images} />
 
     <section>
@@ -33,7 +33,7 @@ const {images, product} = data
       <ul class="flex gap-3">
         {
           product.sizes
-            .split(",")
+            .split(',')
             .map((size) => <li data-size={size}>{size}</li>)
         }
       </ul>
@@ -45,7 +45,7 @@ const {images, product} = data
         <button class="btn-quantity">+</button>
       </div>
 
-      <button class="mt-5 bg-blue-500 text-white p-3 w-full"
+      <button class="mt-5 bg-blue-500 text-white p-3 w-full disabled:bg-gray-300 disabled:cursor-not-allowed"
         >Añadir al carrito</button
       >
 
@@ -56,6 +56,85 @@ const {images, product} = data
 
   <input type="hidden" id="product-id" value={product.id} />
 </MainLayout>
+
+
+
+<script>
+import { CartCookie } from "@/utils";
+
+  const sizeElement = document.querySelectorAll("li");
+
+  sizeElement.forEach((li) => {
+    //agrego un addeventlistener por cada LIITEM
+    li.addEventListener("click", (event) => {
+      sizeElement.forEach((size) => size.classList.remove("selected-size"));
+      li.classList.add("selected-size");
+    });
+  });
+
+  const quantityElement = document.querySelector("input") as HTMLInputElement;
+  const inputProduct = document.querySelector(
+    "#product-id"
+  ) as HTMLInputElement;
+
+  let quantity = 1;
+  //console.log(quantityElement, inputProduct)
+  const [decrementBtn, incrementBtn, addToBtn] =
+    document.querySelectorAll("button");
+
+  incrementBtn.addEventListener("click", () => {
+    //no puede llevar mas de 5
+    quantity = Math.min(quantity + 1, 5);
+    quantityElement.value = quantity.toString();
+    updateButtonState();
+  });
+
+  decrementBtn.addEventListener("click", () => {
+    //no puede llevar mas de 5
+    quantity = Math.max(quantity - 1, 1);
+    quantityElement.value = quantity.toString();
+    updateButtonState();
+  });
+  const updateButtonState = () => {
+    if (quantity === 5) {
+      incrementBtn.classList.add("disabled");
+    } else {
+      incrementBtn.classList.remove("disabled");
+    }
+
+    if (quantity === 1) {
+      decrementBtn.classList.add("disabled");
+    } else {
+      decrementBtn.classList.remove("disabled");
+    }
+  };
+
+  updateButtonState();
+
+addToBtn.addEventListener('click', () => {
+  const size = document.querySelector('.selected-size')?.textContent
+  if(!size) {
+    return alert('seleccione una talla')
+  }
+
+  addToBtn.disabled = true
+
+  CartCookie.addItem({
+    productId: inputProduct.value,
+    size: size,
+    quantity: quantity
+  })
+
+
+  // console.log({
+  //   id: inputProduct.value,
+  //   size: size,
+  //   quantity: quantity
+  // })
+  window.location.href = '/cart'
+})
+
+</script>
 
 <style>
   h3 {
@@ -71,7 +150,7 @@ const {images, product} = data
   }
 
   .btn-quantity {
-    @apply w-10 text-center p-2 border border-gray-300 hover:bg-gray-100 cursor-pointer;
+    @apply w-10 text-center p-2 border border-gray-300 hover:bg-gray-100 disabled:hover:bg-none disabled:hover:cursor-default cursor-pointer;
   }
 
   input {
@@ -86,5 +165,13 @@ const {images, product} = data
 
   input[type="number"] {
     -moz-appearance: textfield; /* Para Firefox */
+  }
+
+  .disabled {
+    background-color: gray;
+  }
+  .disabled:hover {
+    cursor: not-allowed;
+    background-color: gray;
   }
 </style>

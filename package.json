@@ -22,15 +22,18 @@
     "astro": "^4.12.2",
     "auth-astro": "^4.1.2",
     "bcryptjs": "^2.4.3",
+    "js-cookie": "^3.0.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sweetalert2": "^11.12.3",
+    "swiper": "^11.1.9",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/js-cookie": "^3.0.6",
     "daisyui": "^4.12.10"
   }
 }
