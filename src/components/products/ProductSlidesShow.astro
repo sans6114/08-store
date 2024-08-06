@@ -53,13 +53,18 @@ const imagesForSlide = images.map((image) => {
 <script>
   import Swiper from "swiper";
   import { Pagination } from "swiper/modules";
+  document.addEventListener('astro:page-load', () => {
 
-  const swiper = new Swiper(".swiper", {
-    // If we need pagination
-    pagination: {
-      el: ".swiper-pagination",
-    },
+  
+    const swiper = new Swiper(".swiper", {
+      // If we need pagination
+      pagination: {
+        el: ".swiper-pagination",
+      },
+  
+      modules: [Pagination],
+    });
 
-    modules: [Pagination],
-  });
+
+  })
 </script>

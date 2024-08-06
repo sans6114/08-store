@@ -25,12 +25,13 @@ export class CartCookie {
 
     static removeItem(productId: string, size: string): CartItem[] {
         const cart = CartCookie.getCart()
+        //      console.log(productId, size)
         //mi solcuion
         //const ItemToRemove = cart.findIndex(item => productId && size === item.productId && item.size)
         const updatedCart = cart.filter(item => !(item.productId === productId && item.size === size));
+        //console.log(updatedCart)
 
-
-        Cookies.set('cart', JSON.stringify(cart))
+        Cookies.set('cart', JSON.stringify(updatedCart))
         return updatedCart
     }
 }

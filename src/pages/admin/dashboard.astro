@@ -1,0 +1,94 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro"
+import Pagination from "@/components/shared/Pagination.astro";
+import { actions } from "astro:actions";
+import { Formatter } from "@/utils";
+import ProductImage from "@/components/products/ProductImage.astro";
+
+const params = Astro.url.searchParams
+
+const currentPage = Number(params.get('page') ?? 1)
+//console.log(currentPage)
+const { data:productsData, error } = await actions.getProductsByPage.safe({
+  page: currentPage
+});
+
+if (error) {
+  console.log(error);
+  return Astro.redirect("/");
+}
+const { products, totalPages } = productsData;
+if(productsData.products.length === 0) {
+  return Astro.redirect(`/?page=${totalPages}`)
+}
+---
+
+
+<MainLayout title="Panel Administrativo">
+    <div class="flex flex-col px-10">
+        <h1
+          class="text-center mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white"
+        >
+          Astro admin layout
+        </h1>
+        <p
+          class="text-center mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400"
+        >
+          I create this admin panel for maintain the products of the shop.
+        </p>
+    </div>
+
+
+    <div class="overflow-x-auto mt-10">
+        <table class="table">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Price</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- row Image -->
+             {
+                products.map((product) => (
+                <tr>
+              <td>
+                <div class="avatar">
+                    <div class="mask mask-squircle h-12 w-12">
+                    <ProductImage
+                    src={product.images.split(',')[0]}
+                    alt={product.title}
+                    className="w-28 h-28"
+                    />
+                    </div>
+                  </div>
+              </td>
+              <td>
+{product.title}
+              </td>
+              <td>
+                {Formatter.currency(product.price)}
+              </td>
+              <td>{product.stock}</td>
+              <th>
+                <a href=`admin/products/${product.slug}` class="btn btn-ghost btn-xs">details</a>
+              </th>
+            </tr>
+                ))
+             }
+
+          </tbody>
+        </table>
+      </div>
+<div class="flex justify-center">
+
+    <Pagination totalPages={totalPages}/>
+</div>
+
+
+</MainLayout>
+
+

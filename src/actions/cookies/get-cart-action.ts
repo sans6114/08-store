@@ -25,7 +25,7 @@ export const getCart = defineAction({
     const dbProducts = await db.select().from(Products).innerJoin(ProductImage, eq(Products.id, ProductImage.productId)).where(inArray(Products.id, productIds));
 
 
-    console.log(dbProducts)
+    //console.log(dbProducts)
 
 
 

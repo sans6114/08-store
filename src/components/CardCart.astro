@@ -1,0 +1,105 @@
+---
+import type { CartItem } from "@/interfaces";
+import Image from "astro/components/Image.astro";
+import { CartCookie, Formatter } from "@/utils";
+interface Props {
+  itemCart: {
+    productId: string;
+    title: string;
+    size: string;
+    quantity: number;
+    image: string;
+    price: number;
+    slug: string;
+  };
+}
+
+const { itemCart } = Astro.props;
+---
+
+<!-- My Cart -->
+<div
+  class="w-full md:w-5/6 flex flex-col h-fit gap-4 md:p-4 my-4 md:my-0 items-center p-5"
+>
+  <!-- Product -->
+  <div
+    class="flex flex-col p-4 text-lg font-semibold shadow-md border rounded-sm"
+  >
+    <div class="flex flex-col md:flex-row gap-3 justify-between">
+      <!-- Product Information -->
+      <div class="flex flex-col md:flex-row gap-6 items-center">
+        <div class="w-full md:w-28 md:h-28">
+          <Image
+            src={itemCart.image}
+            alt={itemCart.title}
+            width={1000}
+            height={200}
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <a href=`/products/${itemCart.slug}`>
+            <p class="text-lg text-white font-bold">{itemCart.title}</p>
+            <p class="text-md text-white font-bold">
+              Size: <span class="font-normal">{itemCart.size}</span>
+            </p>
+            <p class="text-md text-white font-bold">
+              quantity: <span class="font-normal">{itemCart.quantity}</span>
+            </p>
+            <p class="text-md text-white font-bold">
+              Price: <span class="font-normal"
+                >{Formatter.currency(itemCart.price)}</span
+              >
+            </p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Remove Product Icon -->
+      <div class="self-center">
+        <button
+          data-id={itemCart.productId}
+          data-size={itemCart.size}
+          class="btn-delete"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.5em"
+            height="1.5em"
+            viewBox="0 0 16 16"
+            ><path
+              fill="white"
+              fill-rule="evenodd"
+              d="M5.75 3V1.5h4.5V3zm-1.5 0V1a1 1 0 0 1 1-1h5.5a1 1 0 0 1 1 1v2h2.5a.75.75 0 0 1 0 1.5h-.365l-.743 9.653A2 2 0 0 1 11.148 16H4.852a2 2 0 0 1-1.994-1.847L2.115 4.5H1.75a.75.75 0 0 1 0-1.5zm-.63 1.5h8.76l-.734 9.538a.5.5 0 0 1-.498.462H4.852a.5.5 0 0 1-.498-.462z"
+              clip-rule="evenodd"></path></svg
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+import { itemsInCart } from "@/store";
+import { CartCookie } from "@/utils";
+import { navigate } from "astro:transitions/client";
+
+
+  document.addEventListener('astro:page-load', () => {
+    const deleteBtns: NodeListOf<HTMLButtonElement> =
+      document.querySelectorAll(".btn-delete");
+
+    deleteBtns.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const target = event.currentTarget as HTMLButtonElement;
+        const productId = target.dataset.id ?? '';
+        const size = target.dataset.size ?? '';
+
+        const cart = CartCookie.removeItem(productId, size)
+        itemsInCart.set(cart.length)
+
+
+        navigate('/cart')
+      });
+    });
+  });
+</script>
