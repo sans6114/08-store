@@ -16,17 +16,31 @@ export class uploadToCloud {
         const base64Image = Buffer.from(buffer).toString('base64')
         const imageType = file.type.split('/')[1]
 
-        const resp = await cloudinary.uploader.upload(
-            `
-            data:image/${imageType};base64,${base64Image}
-            `
-        )
+        const resp = await cloudinary.uploader.upload(`data:image/${imageType};base64,${base64Image}`)
 
-        console.log(resp)
+       
 
         return resp.secure_url
     }
 
+
+    static async deleteImage(image: string) {
+
+        try {
+            
+            const imageName = image.split('/').pop() ?? ''
+            const ImageId = imageName.split('.')[0]
+            const resp = await cloudinary.uploader.destroy(ImageId)
+    
+    
+            console.log('holuuus',resp)
+    
+            return true
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+    }
 
 }
 

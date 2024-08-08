@@ -102,8 +102,7 @@ export const postProductUpdated = defineAction({
 
         //     const url = await uploadToCloud.uploadImages(imageFile)
         // })
-
-
+   
         await db.batch(queries)
 
         return product;

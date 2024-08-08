@@ -5,10 +5,11 @@ import {
 } from './auth';
 import { getCart } from './cookies/get-cart-action';
 import {
+  deleteProductImage,
   getProductBySlug,
   getProductsByPage,
+  postProductUpdated,
 } from './products';
-import { postProductUpdated } from './products/post-updated-product-action';
 
 export const server = {
     // actions
@@ -21,6 +22,7 @@ export const server = {
     getProductsByPage,
     getProductBySlug,
     postProductUpdated,
+    deleteProductImage,
     //cart 
     getCart
   };
