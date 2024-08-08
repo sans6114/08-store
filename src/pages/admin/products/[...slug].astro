@@ -282,7 +282,9 @@ import { navigate } from "astro:transitions/client";
   document.addEventListener("astro:page-load", () => {
     const form = document.querySelector("form") as HTMLFormElement;
     const btnSizes = document.querySelectorAll(".btn-size");
-
+if(!form){
+  return
+}
     form.addEventListener("submit", async(e) => {
       e.preventDefault();
 

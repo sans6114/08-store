@@ -24,7 +24,7 @@ export class uploadToCloud {
 
         console.log(resp)
 
-        return 'http://mi:sitio.web/abc.png'
+        return resp.secure_url
     }
 
 

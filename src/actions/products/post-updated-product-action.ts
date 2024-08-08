@@ -5,6 +5,7 @@ import {
 import {
   db,
   eq,
+  ProductImage,
   Products,
 } from 'astro:db';
 import { getSession } from 'auth-astro/server';
@@ -61,20 +62,49 @@ export const postProductUpdated = defineAction({
             ...rest,
         };
 
+        const queries: any = []
+
+
+
+
         //updated product in database, si no existe el form.id es porque mi producto no existe
+        const secureURLS:string[] = []
         if (!form.id) {
-            await db.insert(Products).values(product);
+            queries.push(
+                db.insert(Products).values(product))
         } else {
-            await db.update(Products).set(product).where(eq(Products.id, id));
+            queries.push(
+                db.update(Products).set(product).where(eq(Products.id, id))
+            )
+        }
+        if(form.imageFiles && form.imageFiles.length > 0 && form.imageFiles[0].size > 0){
+            const urls = await Promise.all(
+            form.imageFiles.map(file => uploadToCloud.uploadImages(file))
+            )
+            secureURLS.push(...urls)
         }
 
-        if (!imageFiles) {
-            throw new Error("no Hay imagenes a subir");
-        }
-        await Promise.all(imageFiles.map(async (img) => {
-            if (img.size < 0) return
-            await uploadToCloud.uploadImages(img);
-          }));
+
+        secureURLS.forEach(url => {
+            const imageObjt = {
+            id: UUID(),
+			image: url,
+			productId: product.id,
+            }
+
+            queries.push(db.insert(ProductImage).values(imageObjt))
+        })
+        // imageFiles?.forEach(async (imageFile) => {
+        //     if (imageFile.size < 0) return
+
+            
+
+
+        //     const url = await uploadToCloud.uploadImages(imageFile)
+        // })
+
+
+        await db.batch(queries)
 
         return product;
     },
