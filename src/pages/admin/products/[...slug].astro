@@ -1,5 +1,28 @@
 ---
-import MainLayout from '@/layouts/MainLayout.astro';
+import { actions } from "astro:actions";
+import MainLayout from "@/layouts/MainLayout.astro";
+import ProductSlidesShow from "@/components/products/ProductSlidesShow.astro";
+import ProductImage from "@/components/products/ProductImage.astro";
+
+const { slug } = Astro.params;
+
+console.log(slug);
+
+const { data, error } = await actions.getProductBySlug.safe(slug ?? "");
+if (error) {
+  console.log(error);
+  return Astro.redirect("/404");
+}
+
+const { product, images } = data;
+console.log(Array.from(images));
+if (!images) {
+  return;
+}
+
+// const image = images[0].startsWith('http')
+//   ? images[0]
+//   : `${import.meta.env.PUBLIC_URL}/images/products/${images[0]}`;
 ---
 
 <MainLayout title="Mantenimiento de producto">
@@ -7,6 +30,8 @@ import MainLayout from '@/layouts/MainLayout.astro';
   <a href="javascript:history.back()" class="text-blue-500">← Volver</a>
 
   <form class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Datos nuevos del form -->
+     <input type="hidden" name="id" value={product.id}>
     <!-- Datos generales -->
     <div class="mt-2">
       <h2 class="text-lg font-semibold">Datos generales</h2>
@@ -86,8 +111,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
           class="w-full p-2 border border-gray-300 rounded"
         />
       </div>
-      
-      
+
       <div class="grid grid-cols-2 gap-4">
         <!-- Gender -->
         <div class="mb-4">
@@ -98,7 +122,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
           >
             <option value="">[ Seleccione ]</option>
             {
-              ['men', 'women', 'unisex', 'kid'].map((gender) => (
+              ["men", "women", "unisex", "kid"].map((gender) => (
                 <option
                   value={gender}
                   class="capitalize"
@@ -117,7 +141,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
           <select class="w-full p-2 border border-gray-300 rounded" name="type">
             <option value="">[ Seleccione ]</option>
             {
-              ['shirts', 'shirt', 'pants', 'hats', 'hoodies'].map((type) => (
+              ["shirts", "shirt", "pants", "hats", "hoodies"].map((type) => (
                 <option
                   value={type}
                   class="capitalize"
@@ -136,8 +160,17 @@ import MainLayout from '@/layouts/MainLayout.astro';
         <label for="sizes" class="block">Tallas</label>
         <div class="flex">
           {
-            ['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-              <button class="btn-size">{size}</button>
+            ["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
+              <button
+                class="btn-size"
+                type="button"
+                onclick="this.classList.toggle('active')"
+                class:list={
+                  product.sizes.split(",").includes(size) ? "active" : ""
+                }
+              >
+                {size}
+              </button>
             ))
           }
         </div>
@@ -148,14 +181,13 @@ import MainLayout from '@/layouts/MainLayout.astro';
     <div>
       <!-- File upload -->
       <div class="mt-4">
-        
-         <!-- Guardar  -->
+        <!-- Guardar  -->
         <div class="flex justify-end">
           <button class="bg-blue-500 mb-5 p-2 rounded text-white"
             >Guardar producto</button
           >
         </div>
-        
+
         <!-- File input -->
         <div class="flex items-center justify-center w-full">
           <label
@@ -199,9 +231,9 @@ import MainLayout from '@/layouts/MainLayout.astro';
         </div>
 
         <!-- Slideshow -->
-        <ProductSlideshow images={images} />
+        <ProductSlidesShow images={images} />
 
-        <table class="w-full border">
+        <table class="w-full border mt-10">
           <thead>
             <tr>
               <th>Imagen</th>
@@ -242,3 +274,37 @@ import MainLayout from '@/layouts/MainLayout.astro';
     }
   </style>
 </MainLayout>
+
+<script>
+import { actions } from "astro:actions";
+import { navigate } from "astro:transitions/client";
+
+  document.addEventListener("astro:page-load", () => {
+    const form = document.querySelector("form") as HTMLFormElement;
+    const btnSizes = document.querySelectorAll(".btn-size");
+
+    form.addEventListener("submit", async(e) => {
+      e.preventDefault();
+
+      const btns = Array.from(btnSizes)
+        .filter((btn) => btn.classList.contains("active"))
+        .map((btn) => btn.textContent?.trim())
+        .join(",");
+      const formData = new FormData(form);
+      formData.set("sizes", btns);
+      const dates = Object.fromEntries(formData.entries());
+
+      //console.log(dates);
+
+const {data, error} = await actions.postProductUpdated.safe(formData)
+
+if(error){
+  console.log(error)
+  return alert('error actualizando el producto')
+}
+
+navigate(`/products/${data.slug}`)
+
+    });
+  });
+</script>

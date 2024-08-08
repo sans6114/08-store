@@ -37,6 +37,32 @@ if(productsData.products.length === 0) {
           I create this admin panel for maintain the products of the shop.
         </p>
     </div>
+    <!-- Open the modal using ID.showModal() method -->
+<button class="fixed z-50 bg-white rounded-full bottom-10 right-10" onclick="my_modal_1.showModal()">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" viewBox="0 0 24 24"><path fill="#0080ff" fill-rule="evenodd" d="M7.345 4.017a42.3 42.3 0 0 1 9.31 0c1.713.192 3.095 1.541 3.296 3.26a40.7 40.7 0 0 1 0 9.446c-.201 1.719-1.583 3.068-3.296 3.26a42.3 42.3 0 0 1-9.31 0c-1.713-.192-3.095-1.541-3.296-3.26a40.7 40.7 0 0 1 0-9.445a3.734 3.734 0 0 1 3.295-3.26M12 7.007a.75.75 0 0 1 .75.75v3.493h3.493a.75.75 0 1 1 0 1.5H12.75v3.493a.75.75 0 0 1-1.5 0V12.75H7.757a.75.75 0 0 1 0-1.5h3.493V7.757a.75.75 0 0 1 .75-.75" clip-rule="evenodd"/></svg>
+</button>
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box w-full flex flex-col items-center">
+      <h2
+        class="text-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl dark:text-white"
+      >
+        New product
+      </h1>
+      <p
+        class="text-center mb-6 text-lg font-normal text-gray-500 lg:text-xl  dark:text-gray-400"
+      >
+        You want to create an other product?
+      </p>
+      <a class="btn btn-secondary" href="/admin/products/new">Go there!</a>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button in form, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
 
 
     <div class="overflow-x-auto mt-10">
@@ -74,7 +100,7 @@ if(productsData.products.length === 0) {
               </td>
               <td>{product.stock}</td>
               <th>
-                <a href=`admin/products/${product.slug}` class="btn btn-ghost btn-xs">details</a>
+                <a href={`/admin/products/${product.slug}`} class="btn btn-ghost btn-xs">details</a>
               </th>
             </tr>
                 ))

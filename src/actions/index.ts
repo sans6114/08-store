@@ -8,6 +8,7 @@ import {
   getProductBySlug,
   getProductsByPage,
 } from './products';
+import { postProductUpdated } from './products/post-updated-product-action';
 
 export const server = {
     // actions
@@ -19,6 +20,7 @@ export const server = {
     //products
     getProductsByPage,
     getProductBySlug,
+    postProductUpdated,
     //cart 
     getCart
   };
